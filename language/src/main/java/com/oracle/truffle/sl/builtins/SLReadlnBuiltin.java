@@ -50,6 +50,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.sl.SLException;
 import com.oracle.truffle.sl.SLLanguage;
 import com.oracle.truffle.sl.runtime.SLContext;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * Builtin function that reads a String from the {@link SLContext#getInput() standard input}.
@@ -58,7 +59,7 @@ import com.oracle.truffle.sl.runtime.SLContext;
 public abstract class SLReadlnBuiltin extends SLBuiltinNode {
 
     @Specialization
-    public String readln(@CachedContext(SLLanguage.class) SLContext context) {
+    public SLTaintString readln(@CachedContext(SLLanguage.class) SLContext context) {
         String result = doRead(context.getInput());
         if (result == null) {
             /*
@@ -68,7 +69,7 @@ public abstract class SLReadlnBuiltin extends SLBuiltinNode {
              */
             result = "";
         }
-        return result;
+        return new SLTaintString(result);
     }
 
     @TruffleBoundary

@@ -50,6 +50,7 @@ import com.oracle.truffle.sl.nodes.SLBinaryNode;
 import com.oracle.truffle.sl.runtime.SLBigNumber;
 import com.oracle.truffle.sl.runtime.SLFunction;
 import com.oracle.truffle.sl.runtime.SLNull;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * The {@code ==} operator of SL is defined on all types. Therefore, we need a
@@ -81,8 +82,23 @@ public abstract class SLEqualNode extends SLBinaryNode {
     }
 
     @Specialization
+    protected boolean equal(SLTaintString left, SLTaintString right) {
+        return left.equals(right);
+    }
+
+    @Specialization
     protected boolean equal(String left, String right) {
         return left.equals(right);
+    }
+
+    @Specialization
+    protected boolean equal(SLTaintString left, String right) {
+        return left.getValue().equals(right);
+    }
+
+    @Specialization
+    protected boolean equal(String left, SLTaintString right) {
+        return left.equals(right.getValue());
     }
 
     @Specialization

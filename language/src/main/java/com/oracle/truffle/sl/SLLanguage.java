@@ -108,6 +108,7 @@ import com.oracle.truffle.sl.runtime.SLContext;
 import com.oracle.truffle.sl.runtime.SLFunction;
 import com.oracle.truffle.sl.runtime.SLFunctionRegistry;
 import com.oracle.truffle.sl.runtime.SLNull;
+import com.oracle.truffle.sl.runtime.SLTaintString;
 
 /**
  * SL is a simple language to demonstrate and showcase features of Truffle. The implementation is as
@@ -312,6 +313,9 @@ public final class SLLanguage extends TruffleLanguage<SLContext> {
                 return "Object";
             } else if (value instanceof SLBigNumber) {
                 return value.toString();
+            } else if (value instanceof SLTaintString) {
+                // TODO(lorenzleutgeb): Escape double quotes in TaintString.
+                return "\"" + ((SLTaintString) value).getValue() + "\"";
             } else {
                 return "Unsupported";
             }
@@ -343,6 +347,8 @@ public final class SLLanguage extends TruffleLanguage<SLContext> {
             return "Function";
         } else if (interop.hasMembers(value)) {
             return "Object";
+        } else if (value instanceof SLTaintString) {
+            return "TaintString";
         } else {
             return "Unsupported";
         }
